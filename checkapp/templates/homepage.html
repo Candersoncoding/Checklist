@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    {% load static %}
+    <title>Document</title>
+    <script>
+        $(document).ready(function() {
+            $('.item_li').on('click', event => {
+                $(event.currentTarget).siblings('span').slideToggle().removeAttr('hidden')
+            })
+        })
+    </script>
+    <style>
+        #wrapper{
+            background:url(https://onplanners.com/sites/default/files/styles/template_fancy/public/template-images/printable-blank-checklist-template-template.png);
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        #heads{
+            display:flex;
+            justify-content: space-between;
+        }
+        h2{
+            margin: 10px 0px 0px 10px;
+        }
+        #container{
+            display:flex;
+            flex-direction: column;
+            width:800px;
+            margin:auto;
+        }
+        
+    </style>
+</head>
+<body id="wrapper">
+
+    <div id="heads"><h2 class='text-primary'>Welcome, {{user.first_name}}!</h2> <a href="/logout"><button class="btn btn-secondary" style="margin: 10px 10px 0px 0px">Logout</button></a></div>
+
+    <div id="container">
+        <h3 style="margin: auto;color: white;">Here are all of your current checklists:</h3>
+        {% for checklist in checklists %}
+        <script>
+                    $(document).ready(function(){
+                        $('#item_form_{{checklist.id}}').submit(function(e) {
+                            e.preventDefault();   
+                            if($(this).children('.item_input').val() != ''){
+                                $.post(`new_item/{{checklist.id}}`, $(this).serialize(), function(data){
+                                    const list_item = document.createElement('li')
+                                    list_item.setAttribute("style", "margin: 5px 0px 5px 10px");
+                                    list_item.innerHTML = data.name
+                                    $('#list_items_{{checklist.id}}').append(list_item)
+                                })
+                                
+                            }
+                        });
+                        
+                    });
+        </script>
+        <div id="accordion" role="tablist" >
+            <div class="card">
+                <div class="card-header bg-primary" role="tab" id="heading{{checklist.id}}">
+                    <h5 class="mb-0">
+                    <a data-toggle="collapse" href="#collapse{{checklist.id}}" aria-expanded="true" aria-controls="collapse{{checklist.id}}">
+                        <h4 class="text-white">{{checklist.title}}</h4>
+                    </a>
+                    </h5>
+                </div>
+                
+                <div id="collapse{{checklist.id}}" class="collapse" role="tabpanel" aria-labelledby="heading{{checklist.id}}">
+                    <div class="card-body" style="display:flex;justify-content: space-between;">
+                        <div>
+                            <ul id="list_items_{{checklist.id}}">
+                                {% for item in checklist.items.all %}
+                               <div>   <li style="margin: 5px 0px 5px 10px;" class="item_li"> {{item.name}} </li> <span hidden><a role="button" action='/delete/{{item.id}}' data-method='delete' class='btn btn-outline-danger btn-sm'>delete</a></span></div> 
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="new_item_container" style="width: 300px;padding: 0px 5px 5px 20px;margin: 5px 10px 5px 0px;">
+                            
+                            <div class="card">
+                                <h3 class="card-header text-primary">Add a new Item!</h3>
+                                <div class="card-body">
+                                    <form id="item_form_{{checklist.id}}" action="new_item/{{checklist.id}}" method="POST">
+                                        <div class="form-group">
+                                            {% csrf_token %}
+                                        <label for="item_input">Name of new item:</label>
+                                        <input type="text" name="name" class="item_input form-control" placeholder="motherboard, buy milk, get gas,ect......">
+                                        </div>
+                                            <input type="submit" value="Add item to list" class="btn btn-outline-primary btn-sm">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>        
+                </div>
+            </div>
+        </div>
+        
+         {% endfor %}
+        
+        <div class="new_list_container">
+            
+        </div>
+                        <p></p>
+                            <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                            CLICK TO ADD A LIST
+                            </button>
+                        </p>
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body">
+                                <form action="new" method="POST">
+                                    <div class="form-group">
+                                        {% csrf_token %}
+                                    <label for="formGroupExampleInput">Name of new checklist:</label>
+                                    <input type="text" name="title" class="form-control" id="formGroupExampleInput" placeholder="Groceries, cd's, things to do,ect......">
+                                    </div>
+                                        <input type="submit" value="Add new list" class="btn btn-outline-primary btn-sm">
+                                </form>
+                            </div>
+                        </div>
+    </div>
+    
+</body>
+</html>
+
+  
