@@ -12,7 +12,14 @@
     <script>
         $(document).ready(function() {
             $('.item_li').on('click', event => {
-                $(event.currentTarget).siblings('span').slideToggle().removeAttr('hidden')
+                $(event.currentTarget).siblings('span').fadeToggle().removeAttr('hidden')
+            })
+            $('.del').on('click', function(e) {
+                e.preventDefault();
+                const item_id = $(this).data('value')  // this statement creating a variable for the value of the item_id
+                $.get(`delete/${item_id}`, function(data) {   // this get request is telling the backend to run the delete function and return the data
+                    $(`#li_div_${item_id}`).remove()  // this statement is telling the frontend to take the #li_div_${item_id} element, and remove it from the page
+                })                                                             
             })
         })
     </script>
@@ -61,6 +68,7 @@
                             }
                         });
                         
+                        
                     });
         </script>
         <div id="accordion" role="tablist" >
@@ -78,7 +86,12 @@
                         <div>
                             <ul id="list_items_{{checklist.id}}">
                                 {% for item in checklist.items.all %}
-                               <div>   <li style="margin: 5px 0px 5px 10px;" class="item_li"> {{item.name}} </li> <span hidden><a role="button" action='/delete/{{item.id}}' data-method='delete' class='btn btn-outline-danger btn-sm'>delete</a></span></div> 
+                                <div style="display: flex;" id="li_div_{{item.id}}"> 
+                                    <li style="margin: 5px 0px 5px 10px;" class="item_li"> {{item.name}} </li> 
+                                    <span hidden style="margin: 5px 0px 0px 5px;">
+                                        <a role="button" data-value="{{item.id}}" class='btn btn-outline-danger btn-sm del'>delete</a>
+                                    </span>
+                                </div> 
                                 {% endfor %}
                             </ul>
                         </div>

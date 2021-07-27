@@ -31,5 +31,7 @@ def create_item(request,checklist_id):
     
     return JsonResponse(this_item.return_JSON())
 def destroy_item(request,item_id):
-
-    return JsonResponse()
+    this_item = Item.objects.get(id = item_id)
+    this_item.delete()
+    context = {}
+    return JsonResponse(context)
