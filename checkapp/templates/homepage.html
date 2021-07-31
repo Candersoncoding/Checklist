@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
     {% load static %}
@@ -43,6 +44,10 @@
             width:800px;
             margin:auto;
         }
+        .title_text{
+            display: flex;
+            justify-content: space-between;
+        }
         
     </style>
 </head>
@@ -59,16 +64,21 @@
                             e.preventDefault();   
                             if($(this).children('.item_input').val() != ''){
                                 $.post(`new_item/{{checklist.id}}`, $(this).serialize(), function(data){
-                                    const list_item = document.createElement('li')
-                                    list_item.setAttribute("style", "margin: 5px 0px 5px 10px");
-                                    list_item.innerHTML = data.name
-                                    $('#list_items_{{checklist.id}}').append(list_item)
+                                    const list_item = document.createElement('li')  //creates list element stored in variable list_item
+                                    list_item.setAttribute("style", "margin: 5px 0px 5px 10px"); 
+                                    list_item.innerHTML = data.name  // telling the HTML what data to put into the element created
+                                    $('#list_items_{{checklist.id}}').append(list_item) // this statement tells the HTML where to put the new element with the data
                                 })
                                 
                             }
-                        });
-                        
-                        
+                        });                        
+                        // function emptyValidation() {
+                        //     var formField = document.forms["item_form_{{checklist_id}}"]["name"].value;
+                        //     if (formField == "" || x == null) {
+                        //         alert("You must enter an item to be added.");
+                        //         return false;
+                        //     }
+                        // }
                     });
         </script>
         <div id="accordion" role="tablist" >
@@ -76,7 +86,7 @@
                 <div class="card-header bg-primary" role="tab" id="heading{{checklist.id}}">
                     <h5 class="mb-0">
                     <a data-toggle="collapse" href="#collapse{{checklist.id}}" aria-expanded="true" aria-controls="collapse{{checklist.id}}">
-                        <h4 class="text-white">{{checklist.title}}</h4>
+                        <div class="title_text"><h4 class="text-white">{{checklist.title}} </h4> <a href="delete/checklist/{{checklist.id}}" role="button"><i class="bi bi-trash text-white"></i></a> </div> 
                     </a>
                     </h5>
                 </div>
@@ -85,11 +95,11 @@
                     <div class="card-body" style="display:flex;justify-content: space-between;">
                         <div>
                             <ul id="list_items_{{checklist.id}}">
-                                {% for item in checklist.items.all %}
+                                {% for item in checklist.items.all %}  <!--this is looping through all the items in each checklist-->
                                 <div style="display: flex;" id="li_div_{{item.id}}"> 
                                     <li style="margin: 5px 0px 5px 10px;" class="item_li"> {{item.name}} </li> 
                                     <span hidden style="margin: 5px 0px 0px 5px;">
-                                        <a role="button" data-value="{{item.id}}" class='btn btn-outline-danger btn-sm del'>delete</a>
+                                        <a role="button" data-value="{{item.id}}" class='btn btn-outline-danger btn-sm del'>delete</a> <!--data-value specifies value for the item_id referenced in the script, so the frontend knows which item to delete-->
                                     </span>
                                 </div> 
                                 {% endfor %}
@@ -100,7 +110,8 @@
                             <div class="card">
                                 <h3 class="card-header text-primary">Add a new Item!</h3>
                                 <div class="card-body">
-                                    <form id="item_form_{{checklist.id}}" action="new_item/{{checklist.id}}" method="POST">
+                                    <form id="item_form_{{checklist.id}}" action="new_item/{{checklist.id}}" method="POST"> <!-- form to add new_item nested in checklist accordian-->
+                                        
                                         <div class="form-group">
                                             {% csrf_token %}
                                         <label for="item_input">Name of new item:</label>
@@ -128,7 +139,8 @@
                         </p>
                         <div class="collapse" id="collapseExample">
                             <div class="card card-body">
-                                <form action="new" method="POST">
+                                <form action="new" method="POST"> <!--form to add a new_checklist in a collapse window-->
+                                    
                                     <div class="form-group">
                                         {% csrf_token %}
                                     <label for="formGroupExampleInput">Name of new checklist:</label>
