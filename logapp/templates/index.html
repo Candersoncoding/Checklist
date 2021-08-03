@@ -30,8 +30,10 @@
 <body id="container" >
         
     <form action="/users/register" method='POST' class="box" >
-        {% for message in messages %} 
-        <p style="background-color: rgb(146, 0, 0);color: rgb(153, 153, 0);font-weight: 800;">{{message}}</p>
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">
+          <strong>{{message}}</strong> 
+        </div>
         {% endfor %}
         <h2 style="margin-left: 50px;">Register</h2><br>
         {% csrf_token %}
@@ -58,9 +60,7 @@
         <input type="submit" value="Register" class="btn btn-info btn-lg" style="margin: 30px 0px 0px 50px;">
     </form>
     <form action="/users/login" method='POST' class="box">
-        {% for login_message in login_messages %} 
-        <p style="background-color: rgb(146, 0, 0);color: rgb(153, 153, 0);font-weight: 800;">{{login_message}}</p>
-        {% endfor %}
+        
         <h2 style="margin-left: 50px;">Log In</h2><br>
         {% csrf_token %}
         <div class="form-group">
